@@ -1,20 +1,25 @@
-export function add(numbers) {
+function add(numbers) {
     if (!numbers) return 0;
 
-    // Default delimiters
-    let delimiter = /,|\n/;
+    // Check for custom delimiter
+    let delimiter = /,|\n/; // Default delimiters
     if (numbers.startsWith("//")) {
-        const parts = numbers.split("\n");
-        delimiter = new RegExp(parts[0].slice(2)); // Custom delimiter
-        numbers = parts[1];
+        const delimiterMatch = numbers.match(/^\/\/(.+)\n/);
+        if (delimiterMatch) {
+            delimiter = new RegExp(delimiterMatch[1]);
+            numbers = numbers.split("\n").slice(1).join("\n"); // Remove delimiter line
+        }
     }
 
-    const nums = numbers.split(delimiter).map(Number);
-    const negatives = nums.filter(n => n < 0);
+    // Split numbers and parse them
+    const numberArray = numbers.split(delimiter).map(Number);
+    const negatives = numberArray.filter((n) => n < 0);
 
     if (negatives.length > 0) {
         throw new Error(`Negative numbers not allowed: ${negatives.join(", ")}`);
     }
 
-    return nums.reduce((sum, num) => sum + num, 0);
+    return numberArray.reduce((sum, num) => sum + num, 0);
 }
+
+export default add;
